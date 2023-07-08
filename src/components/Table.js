@@ -1,47 +1,66 @@
 import React, { useEffect } from "react";
-import { getData } from "../components/Redux/slice";
+import { dismissAlert, getData } from "../components/Redux/slice";
 import DataTable from "react-data-table-component";
 import { useDispatch, useSelector } from 'react-redux'
+import {toast,ToastContainer} from 'react-toastify'
+
 import Loader from './Loader'
 const columns = [
   {
       name: 'Id',
       selector: row => row.id ,
   },
-  {
-      name: 'Title',
-      selector: row => row.title,
-  },
-  {
-      name: 'Body',
-      selector: row => row.body,
-  },
+    {
+        name: 'Body',
+        selector: row => row.body,
+    },
   {
       name: 'userId',
       selector: row => row.userId,
   },
-
 ];
+const customStyles = {
+  cells: {
+      style: {
+          width: '70px', 
+      },}
+    }
+
 
 const Tables = () => {
   const dispatch=useDispatch();
-  const { loading, data, alertFailure, alertSuccess } = useSelector((state) => state.TableData);
-  // console.log(data,'alertFailure');
+  const { loading, data ,alerts} = useSelector((state) => state.TableData);
+  
+
+  // useEffect(()=>{
+  //   dispatch(getData())
+  //   .then(()=>(toast(alerts.alertSuccess)))
+  //   .catch(()=>toast(alerts.alertFailure))
+  // },[])
   useEffect(()=>{
-    dispatch(getData())
-  },[]
-    )
-    if(loading){
-      return <Loader/>
-    }
+    dispatch(getData()).then(setTimeout(()=>(alert(alerts.alertSuccess)),2000))
+    .catch(console.log(alerts.alertFailure))
+  },[])
+  
+  
   return (
     <div>
       <DataTable
         data={data}
         columns={columns}
-        defaultPageSize={2}
-        pageSizeOptions={[2, 4, 6]}
+        progressPending={loading}
+        progressComponent={<Loader />}
+        customStyles={customStyles}
         />  
+        {/* <ToastContainer  position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover/> */}
     </div>
   );
 };
