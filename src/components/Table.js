@@ -1,10 +1,11 @@
 import React, { useEffect } from "react";
-import { dismissAlert, getData } from "../components/Redux/slice";
+import { getData } from "../components/Redux/slice";
 import DataTable from "react-data-table-component";
 import { useDispatch, useSelector } from "react-redux";
 import { toast, ToastContainer } from "react-toastify";
 import Typography from "@mui/material/Typography";
 import Loader from "./Loader";
+
 import 'react-toastify/dist/ReactToastify.css';
 const columns = [
   {
@@ -33,19 +34,17 @@ const Tables = () => {
   const {loading, data, alerts } = useSelector((state) => state.TableData);
   // console.log(loading,"loadingloadingloadingloading")
 
-  useEffect(() => {
+ useEffect(() => {
     dispatch(getData())
-    .then(()=>(
-    toast.success(alerts.alertSuccess)))
-    // .then((res)=>{
-    //   console.log(res)
+  },[]);
 
-    //   console.log("alerts",alerts)
-
-    // })
-    .catch(()=>toast.error(alerts.alertFailure))
-  }, []);
-  
+  useEffect(()=>{
+    if(data){
+        toast.success(alerts.message);
+    }else{
+      toast.error(alerts.message)
+    }
+  },[alerts])
 
   return (
     <div>
@@ -55,7 +54,7 @@ const Tables = () => {
         gutterBottom
       >
         Data Table
-      </Typography>
+      </Typography>     
       <DataTable
         data={data}
         columns={columns}
